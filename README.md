@@ -36,8 +36,11 @@ IntParams - integer variables
 VecterParams - float2, float3, float4 variables. Length is required to tell the program how many elements this vector has. If not set, the program defaults to Vector4
 
 R - Element 1
+
 G - Element 2
+
 B - Element 3
+
 A - Element 4
 
 Using XYZW notation for this is not an option at the moment.
