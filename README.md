@@ -7,6 +7,7 @@ So far, This tool allows for development on miscellaneous Pixel Shaders that mea
 When used correctly, this program will update your chosen previewed shader on the screen starting from your player's center heading bottom left like this.
 <img width="1991" height="1029" alt="image" src="https://github.com/user-attachments/assets/3977baca-2a0a-45af-9ed3-51469686a08d" />
 
+To install the mod, download this project, unzip in the ModSources folder of TmodLoader (Can be found in tmodloaders menu through Workshop>Develop Mods>Open Sources) and click Build+Reload
 When Loading this mod for the first time, it will create the directory "C:\ELITEShaderTool\Workspace\DefaultEffect". that folder will further contain DefaultEffect.fx, and a Textures folder.
 
 These Default workspace settings and effect names can, and should, be changed in the Mod's config file. 
