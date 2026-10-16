@@ -50,11 +50,16 @@ If those names and structures are setup correctly, your parameters should be map
 
 Your game will update the displayed shader every time you save the shader, with the exception of missing textures or a compiler error. If this happens, the error will be sent in the game chat.
 
-If you would like to do multiple shader projects with this tool, changing the "Current Effect Name" variable in config wont delete or modify your existing names, it will make a new folder in your workspace directory and set it up as its own project. If you change it back to an existing name, it will just use the existing directory. 
-This way, if you want to flip between different shaders, you can do so easily :)  
+The Blend Option property here represents blend modes for the shader to follow. It defaults to 0 for additive blending, but if you want to make a custom blend state set this to -1 and edit the Custom Blending object.
+<img width="707" height="81" alt="image" src="https://github.com/user-attachments/assets/5ed3df9c-6860-4a5d-a7e2-56166568b9a3" />
+
+
+If you would like to do multiple shader projects with this tool, changing the "Current Effect Name" variable in config won't delete or modify your existing names. It will instead make a new folder in your workspace directory and set it up as its own project. If you change it back to an existing name, it will just use the existing directory. 
+This way, if you want to switch between different shaders, you can do so easily :)  
 
 --- KNOWN CRASHES, BUGS, CONCERNS ---
 
+- ModConfigs UI is way too narrow and rigid for large file paths and the blend state property lol. I will fix that when I know how to.
 - If you notice the photino app in the code, that is meant to be a future external UI window so that perhaps I can make the parameters and some config variables easy to change in custom UI. Far fetched goal for now. Why is it an external window instead of terraria UI? The idea seemed cool to me..
 - There is Likely some edge case I am not aware of that may crash the game. Sorry about that if this happens, this is still early in development.
 
