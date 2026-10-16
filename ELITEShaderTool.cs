@@ -19,8 +19,12 @@ namespace ELITEShaderTool
 
 		Process window;
 		public bool hasStarted;
+		public static ELITEShaderTool Instance {get; private set;}
+		public TestSystem MainSystem {get; private set;}
+
         public override void Load()
         {
+			Instance = this;
 			return;
 			
 			try
@@ -75,6 +79,8 @@ namespace ELITEShaderTool
         }
         public override void Unload()
         {
+			Instance = null;
+			
 			try
 			{
 				window?.Close();
@@ -90,10 +96,16 @@ namespace ELITEShaderTool
 			return ModDirectory();
 		}
 
+		public void SetSystem(TestSystem system)
+		{
+			if(MainSystem == null) MainSystem = system;
+		}
+
         private string ModDirectory([CallerFilePath] string thisPath = "")
         {
             return Path.GetDirectoryName(thisPath);
         }
+
 		
 		// ProcessStartInfo startInfo = new ProcessStartInfo
 		// {

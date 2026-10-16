@@ -14,6 +14,7 @@ namespace ELITEShaderTool.Scripts
     public class JSONBasedShaderData : MiscShaderData
     {
         public JSONShaderParameters jsonFile;
+        public string jsonString;
         public LiveShaderData inputShaderData;
         public SamplerState samplerState;
         public Dictionary<string, StoredTexture> storedTextures;
@@ -21,9 +22,10 @@ namespace ELITEShaderTool.Scripts
 
         public JSONBasedShaderData(LiveShaderData liveShaderData) : base(liveShaderData.tangibleEffect, liveShaderData.passName)
         {
-            jsonFile = DeserializeJSONFile(liveShaderData.pathOfJSONFile);
             inputShaderData = liveShaderData;
-            samplerState = SamplerState.LinearClamp;
+            samplerState = SamplerState.LinearWrap;
+            jsonFile = DeserializeJSONFile(liveShaderData.pathOfJSONFile);
+            
             Apply();
         }
 
@@ -31,13 +33,14 @@ namespace ELITEShaderTool.Scripts
         {
             if(!File.Exists(path)){return null;}
 
-            string jsonString = File.ReadAllText(path);
+            jsonString = File.ReadAllText(path);
             return JsonSerializer.Deserialize<JSONShaderParameters>(jsonString);
         }
         
 
         public override void Apply(DrawData? drawData = null)
         {
+            ELITEShaderTool.Instance.MainSystem.LiftShaderDataBlockade();
             
             if(jsonFile.FloatParams != null)
             {
@@ -105,6 +108,13 @@ namespace ELITEShaderTool.Scripts
         }
 
         public void SetTextureFromPath(string texturePath, string parameter, int buffer){
+            if(!File.Exists($@"{inputShaderData.textureDirectory}\{texturePath}"))
+            {
+                Main.NewText($"Warning: {texturePath} does not exist in {ToolConfig.Instance.TextureSubdirectorySuffix} folder. fix '{parameter}' parameter in the .json to fix");
+                ELITEShaderTool.Instance.MainSystem.BlockadeRendering();
+                return;
+            }
+
             using(var stream = System.IO.File.OpenRead($@"{inputShaderData.textureDirectory}\{texturePath}")){
                 Texture2D texture = Texture2D.FromStream(Main.graphics.GraphicsDevice, stream);
                 if(texture != null)

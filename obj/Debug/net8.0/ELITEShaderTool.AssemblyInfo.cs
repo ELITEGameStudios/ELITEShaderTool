@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ELITEShaderTool")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a4df1060048863972d716b29d49832926820183c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e906820b748e1c9da458a34bfd0021c0e09430d4")]
 [assembly: System.Reflection.AssemblyProductAttribute("ELITEShaderTool")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ELITEShaderTool")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

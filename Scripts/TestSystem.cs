@@ -17,9 +17,10 @@ namespace ELITEShaderTool
 
         int timer;
         int timeUntilRefresh => ToolConfig.Instance.TicksUntilRefresh > 0 ? ToolConfig.Instance.TicksUntilRefresh  : 120;
-        bool currentlyCompiling, refreshing, environmentExists;
+        bool currentlyCompiling, refreshing, environmentExists, shaderDataErrorBlockade;
         bool ReadyForSetup => ToolConfig.Instance.WorkspacePath != "null";
         public static Asset<Texture2D> mainRect;
+        ELITEShaderTool ModScript => Mod as ELITEShaderTool;
 
         public struct LiveShaderData
         {
@@ -27,13 +28,13 @@ namespace ELITEShaderTool
             public string effectName;
             public string passName;
             public string FXFilePath;
-            public string FXFileString;
+            public string FXFileString, JSONFileString;
             public byte[] compiledFXCBytes;
             public bool useable;
             public string shaderDirectory;
             public string textureDirectory;
+            public string pathOfJSONFile; //=> $@"{shaderDirectory}\{effectName}.json";
             public readonly string pathOfFXCFile => $@"{shaderDirectory}\{effectName}.fxc";
-            public readonly string pathOfJSONFile => $@"{shaderDirectory}\{effectName}.json";
             public readonly string shaderDataKey => $"ELITEShaderTool:{effectName}";
 
             public void SetFileName(string name)
@@ -52,6 +53,19 @@ namespace ELITEShaderTool
 
                 return hasChanged;
             }
+
+            public bool CheckJSONFileLiveChanges(bool updateString = true)
+            {
+                if (!File.Exists(pathOfJSONFile)) {Main.NewText("a .fx file at path " + FXFilePath + " has gone missing!"); return false;}
+            
+                string newString = File.ReadAllText(pathOfJSONFile);
+
+                bool hasChanged = newString != JSONFileString;
+                if(hasChanged && updateString) JSONFileString = newString;
+
+                return hasChanged;
+            }
+
             public static LiveShaderData SetupEffectByFXC(LiveShaderData shaderData)
             {
                 try
@@ -69,6 +83,7 @@ namespace ELITEShaderTool
                         if (finishedSetup)
                         {
                             shaderData.useable = true;
+                            shaderData.JSONFileString = File.ReadAllText(shaderData.pathOfJSONFile);
                             activeDisplayedShader = shaderData;
                         }
                         else
@@ -103,6 +118,7 @@ namespace ELITEShaderTool
         public override void Load()
         {
             mainRect = ModContent.Request<Texture2D>("ELITEShaderTool/Assets/Textures/OpaqueRect");
+            ModScript.SetSystem(this);
         }
 
 
@@ -113,7 +129,7 @@ namespace ELITEShaderTool
             SetupEffectEnvironment(ToolConfig.Instance.CurrentEffectName, ToolConfig.Instance.CurrentEffectPass);
         }
 
-        public void SetupEffectEnvironment(string name, string passName = "Main")
+        public void SetupEffectEnvironment(string name, string passName = "Main", bool reinit = false)
         {
             // if()
             string workspace = ToolConfig.Instance.WorkspacePath;
@@ -123,13 +139,39 @@ namespace ELITEShaderTool
             }
 
             DirectoryInfo directory = Directory.CreateDirectory(effectEnvironmentPath);
-            DirectoryInfo textureDir = directory.CreateSubdirectory(ToolConfig.Instance.TextureSubdirectorySuffix);
+            string textureDirPath =effectEnvironmentPath+"\\"+ToolConfig.Instance.TextureSubdirectorySuffix;
+            if (!Directory.Exists(textureDirPath))
+            {
+                // Creates texture subdirectory
+                DirectoryInfo textureDir = directory.CreateSubdirectory(ToolConfig.Instance.TextureSubdirectorySuffix);
+                
+                // Adds template texture
+                byte[] templateBytes = File.ReadAllBytes(ModScript.GetModDirectory()+@"\Assets\Textures\TemplateTexture.png");
+                using (FileStream newFile = File.Create(textureDir+@"\TemplateTexture.png"))
+                {
+                    newFile.Write(templateBytes);
+                }; 
+            }
 
             string fxFilePath = $@"{effectEnvironmentPath}\{name}.fx";
+            string jsonFilePath = $@"{effectEnvironmentPath}\{name}.json";
+
             if(!File.Exists(fxFilePath)) {
-                using (File.Create(fxFilePath))
+                // Adds template .fx
+                byte[] templateBytes = File.ReadAllBytes(ModScript.GetModDirectory()+@"\Assets\TemplateFiles\TemplateEffect.fx");
+
+                using (FileStream newFile = File.Create(fxFilePath) )
                 {
-                    // can do something about this in the future, like default file writes for example.
+                    newFile.Write(templateBytes);
+                }; 
+            }
+
+            if(!File.Exists(jsonFilePath)) {
+                // Adds template .json
+                byte[] templateBytes = File.ReadAllBytes(ModScript.GetModDirectory()+@"\Assets\TemplateFiles\TemplateJson.json");
+                using (FileStream newFile = File.Create(jsonFilePath))
+                {
+                    newFile.Write(templateBytes);
                 }; 
             }
             
@@ -139,12 +181,15 @@ namespace ELITEShaderTool
             data.effectName = name;
             data.passName = passName;
             data.shaderDirectory = directory.FullName;
-            data.textureDirectory = textureDir.FullName;
+            data.textureDirectory = textureDirPath;
             
             data.FXFilePath = fxFilePath;
             data.FXFileString = "";
-            data.CheckFXFileLiveChanges(false);
+            data.JSONFileString = "";
+            data.pathOfJSONFile = jsonFilePath;
             activeDisplayedShader = data;
+            activeDisplayedShader.CheckFXFileLiveChanges(reinit); // should update file strings and refresh automatically
+            // RefreshEffects();
 
             environmentExists = true;
         }
@@ -168,12 +213,16 @@ namespace ELITEShaderTool
             {
                 if (await CompileFXCFile(activeDisplayedShader.effectName, activeDisplayedShader.shaderDirectory))
                 {
-                    LiveShaderData data = LiveShaderData.SetupEffectByFXC(activeDisplayedShader);                    
+                    LiveShaderData.SetupEffectByFXC(activeDisplayedShader);                    
                 }
                 else
                 {
                     Main.NewText("Change in .fx file detected, but couldnt compile new FXC");
                 }
+            }
+            else if(activeDisplayedShader.CheckJSONFileLiveChanges())
+            {
+                LiveShaderData.SetupEffectByFXC(activeDisplayedShader);
             }
             else
             {
@@ -221,16 +270,17 @@ namespace ELITEShaderTool
                 compiler.Start();
 				compiler.BeginOutputReadLine();
 				compiler.BeginErrorReadLine();
+
 				compiler.OutputDataReceived += (_, e) =>
 				{
 					if (e.Data != null)
-						Mod.Logger.Info($"FXC OUT: {e.Data}");
+						Main.NewText($"FXC Compiler Output: {e.Data}");
 				};
 
 				compiler.ErrorDataReceived += (_, e) =>
 				{
 					if (e.Data != null)
-						Mod.Logger.Error($"FXC ERR: {e.Data}");
+						Main.NewText($"FXC Compiler Error: {e.Data}");
 				};
 
 				Mod.Logger.Info($"FXC ID: {compiler.Id}");
@@ -251,7 +301,7 @@ namespace ELITEShaderTool
 			{
                 currentlyCompiling = false;
                 Main.NewText("good luck buddy.");
-				Mod.Logger.Info("good luck buddy");
+				Mod.Logger.Info("good luck buddy.");
                 
                 return false;
 			}
@@ -259,25 +309,46 @@ namespace ELITEShaderTool
 
         public override void PostDrawInterface(SpriteBatch spriteBatch)
         {
-            if(!environmentExists) return;
+            if(!environmentExists || shaderDataErrorBlockade) return;
 
             if(activeDisplayedShader.useable && ToolConfig.Instance.showQuad)
             {
+                Vector2 screenMiddle = new Vector2(Main.screenWidth, Main.screenHeight)/2;
+                Vector2 rectOffset = new Vector2(ToolConfig.Instance.PreviewEffectSizeX, ToolConfig.Instance.PreviewEffectSizeY)/2;
+                Vector2 mainOffset = new Vector2(ToolConfig.Instance.PreviewOffsetX, ToolConfig.Instance.PreviewOffsetY);
+                Vector2 final = screenMiddle + mainOffset;
+
                 spriteBatch.End();
                 GameShaders.Misc[activeDisplayedShader.shaderDataKey].Apply();
-                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, activeDisplayedShader.tangibleEffect.Value, Main.GameViewMatrix.TransformationMatrix);
+                spriteBatch.Begin(SpriteSortMode.Immediate, ToolConfig.Instance.GetBlending(), SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, activeDisplayedShader.tangibleEffect.Value, Main.GameViewMatrix.TransformationMatrix);
                 
                 // Draw plane here
                 spriteBatch.Draw(
                     mainRect.Value, 
-                    new Rectangle((int)Main.player[0].Center.X - (int)Main.screenPosition.X, (int)Main.player[0].Center.Y - (int)Main.screenPosition.Y, ToolConfig.Instance.PreviewEffectSizeX, ToolConfig.Instance.PreviewEffectSizeY),
-                    Color.White);// null, Color.White, 0, Vector2.Zero, SpriteEffect(), 0);
+                    new Rectangle((int)final.X, (int)final.Y, ToolConfig.Instance.PreviewEffectSizeX, ToolConfig.Instance.PreviewEffectSizeY),
+                    null,
+                    // new Rectangle((int)Main.player[0].Center.X - (int)Main.screenPosition.X, (int)Main.player[0].Center.Y - (int)Main.screenPosition.Y, ToolConfig.Instance.PreviewEffectSizeX, ToolConfig.Instance.PreviewEffectSizeY),
+                    Color.White,
+                    0,
+                    Vector2.Zero,
+                    SpriteEffects.None,
+                    0);// null, Color.White, 0, Vector2.Zero, SpriteEffect(), 0);
                 
                 spriteBatch.End();
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
                 
             }
         
+        }
+    
+        public void BlockadeRendering()
+        {
+            shaderDataErrorBlockade = true;
+        }
+
+        public void LiftShaderDataBlockade()
+        {
+            shaderDataErrorBlockade = false;
         }
     }
 }

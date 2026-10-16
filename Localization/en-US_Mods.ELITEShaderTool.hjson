@@ -41,5 +41,31 @@ Configs: {
 		}
 
 		DisplayName: Tool Config
+
+		PreviewOffsetY: {
+			Tooltip: ""
+			Label: Preview Offset Y
+		}
+
+		PreviewOffsetX: {
+			Tooltip: ""
+			Label: Preview Offset X
+		}
+
+		blending: {
+			Tooltip: ""
+			Label: blending
+		}
+
+		blendOption: {
+			Label: 0: Additive, 1: AlphaBlend, 2: Opaque, 3: NonPremultiplied. -1: Custom
+			Tooltip: ""
+			Header: BlendState Modes
+		}
+
+		CustomBlending: {
+			Label: Custom Blending
+			Tooltip: ""
+		}
 	}
 }

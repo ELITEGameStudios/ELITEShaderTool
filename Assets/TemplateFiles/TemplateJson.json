@@ -1,0 +1,28 @@
+{
+    "TextureParams":
+    {
+        "mainImage": {
+            "FileName": "TemplateTexture.png",
+            "Buffer":1
+        }
+    },
+    "FloatParams":{
+        "exampleFloat":1.0
+    },
+    "IntParams":{
+        "exampleInt": 1
+    },
+    "VectorParams":{
+        "mainColor": {
+            "Length":4,
+            "R":1,
+            "G":1,
+            "B":1,
+            "A":1
+        }
+    },
+    "BoolParams":{
+        "showUV": false,
+        "showTexture": true
+    }
+}
