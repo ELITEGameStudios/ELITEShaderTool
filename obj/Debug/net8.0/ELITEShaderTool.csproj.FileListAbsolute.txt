@@ -1,0 +1,5 @@
+c:\Users\User\Documents\My Games\Terraria\tModLoader\ModSources\ELITEShaderTool\obj\Debug\net8.0\ELITEShaderTool.csproj.AssemblyReference.cache
+c:\Users\User\Documents\My Games\Terraria\tModLoader\ModSources\ELITEShaderTool\obj\Debug\net8.0\ELITEShaderTool.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\User\Documents\My Games\Terraria\tModLoader\ModSources\ELITEShaderTool\obj\Debug\net8.0\ELITEShaderTool.AssemblyInfoInputs.cache
+c:\Users\User\Documents\My Games\Terraria\tModLoader\ModSources\ELITEShaderTool\obj\Debug\net8.0\ELITEShaderTool.AssemblyInfo.cs
+c:\Users\User\Documents\My Games\Terraria\tModLoader\ModSources\ELITEShaderTool\obj\Debug\net8.0\ELITEShaderTool.csproj.CoreCompileInputs.cache

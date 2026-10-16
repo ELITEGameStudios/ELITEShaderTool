@@ -1,0 +1,45 @@
+Configs: {
+	ToolConfig: {
+		PreviewEffectSizeY: {
+			Tooltip: ""
+			Label: Preview Effect Size Y
+		}
+
+		PreviewEffectSizeX: {
+			Tooltip: ""
+			Label: Preview Effect Size X
+		}
+
+		TicksUntilRefresh: {
+			Tooltip: ""
+			Label: Ticks Until Refresh
+		}
+
+		CurrentEffectPass: {
+			Tooltip: ""
+			Label: Current Effect Pass
+		}
+
+		CurrentEffectName: {
+			Tooltip: ""
+			Label: Current Effect Name
+		}
+
+		TextureSubdirectorySuffix: {
+			Tooltip: ""
+			Label: Texture Subdirectory Suffix
+		}
+
+		WorkspacePath: {
+			Tooltip: ""
+			Label: Workspace Path
+		}
+
+		showQuad: {
+			Tooltip: ""
+			Label: show Quad
+		}
+
+		DisplayName: Tool Config
+	}
+}
