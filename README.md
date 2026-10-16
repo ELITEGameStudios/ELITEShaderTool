@@ -10,6 +10,8 @@ When used correctly, this program will update your chosen previewed shader on th
 
 
 To install the mod, download this project, unzip in the ModSources folder of TmodLoader (Can be found in tmodloaders menu through Workshop>Develop Mods>Open Sources) and click Build+Reload
+
+
 When Loading this mod for the first time, it will create the directory "C:\ELITEShaderTool\Workspace\DefaultEffect". that folder will further contain DefaultEffect.fx, and a Textures folder.
 
 These Default workspace settings and effect names can, and should, be changed in the Mod's config file. 
