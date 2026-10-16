@@ -4,8 +4,10 @@ A Shader tool to assist Live testing and development of shaders in Terraria mods
 --- THIS IS VERY EARLY IN DEVLOPMENT AND A WORK IN PROGRESS, DONT EXPECT A POLISHED/FINISHED STATE ---
 
 So far, This tool allows for development on miscellaneous Pixel Shaders that meant to be drawn on opaque quads through the spriteBatch.Draw method.
+
 When used correctly, this program will update your chosen previewed shader on the screen starting from your player's center heading bottom left like this.
 <img width="1991" height="1029" alt="image" src="https://github.com/user-attachments/assets/3977baca-2a0a-45af-9ed3-51469686a08d" />
+
 
 To install the mod, download this project, unzip in the ModSources folder of TmodLoader (Can be found in tmodloaders menu through Workshop>Develop Mods>Open Sources) and click Build+Reload
 When Loading this mod for the first time, it will create the directory "C:\ELITEShaderTool\Workspace\DefaultEffect". that folder will further contain DefaultEffect.fx, and a Textures folder.
@@ -22,6 +24,7 @@ Then, and this is important (unless you dont have any variables in your hlsl cod
 Setting up the JSON is demonstrated below, even if you dont have parameters, creating the json is required or the program will crash
 
 -- ASSIGNING PARAMETERS -- 
+
 To do this, create a .json file in the same folder as your generated .fx file. Make sure it has the same name as your .fx file as well
 <img width="341" height="164" alt="image" src="https://github.com/user-attachments/assets/7b6f0629-cc92-4e52-a46a-cb5a1eb913fb" />
 
@@ -45,6 +48,7 @@ BoolParams - boolean parameters
 If those names and structures are setup correctly, your parameters should be mapped to your shader when it renders :)
 
 --- RENDERING THE SHADER ---
+
 If your .json exists, your .fx file has functional compileable shader code, and show Quad is enabled in the config, your shader should appear within 300 ticks (linked to another config variable) after you enter a world.
 From this point on, your game will update the display every time you save the shader!
 
@@ -52,6 +56,7 @@ If you would like to do multiple shader projects with this tool, changing the "C
 This way, if you want to flip between different shaders, you can do so easily :)  
 
 --- KNOWN CRASHES, BUGS, CONCERNS ---
+
 - The game may crash if your .json references a texture that doesn't exist in the folder. Make sure the file names of textures arent misspelled and that the textures are in their appropriate Textures folder.
 - Likely another edge case I am not aware of that may crash the game. Sorry about that if this happens.
 - If you have not yet compiled a functional .fxc shader due to a compilation error of some sort, the mod wont tell you that yet, nor will it tell you what the error is. The only place you can find this information is through client.log in tmodloader's logs folder.
