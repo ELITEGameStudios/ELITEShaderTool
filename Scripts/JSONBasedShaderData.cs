@@ -18,6 +18,7 @@ namespace ELITEShaderTool.Scripts
         public LiveShaderData inputShaderData;
         public SamplerState samplerState;
         public Dictionary<string, StoredTexture> storedTextures;
+        public float timeOnStart;
 
 
         public JSONBasedShaderData(LiveShaderData liveShaderData) : base(liveShaderData.tangibleEffect, liveShaderData.passName)
@@ -25,7 +26,7 @@ namespace ELITEShaderTool.Scripts
             inputShaderData = liveShaderData;
             samplerState = SamplerState.LinearWrap;
             jsonFile = DeserializeJSONFile(liveShaderData.pathOfJSONFile);
-            
+            timeOnStart = Main.GlobalTimeWrappedHourly;
             Apply();
         }
 
@@ -97,9 +98,11 @@ namespace ELITEShaderTool.Scripts
                         SetTextureFromStored(key);
                     }
                 }
+
             }
 
             base.Apply(drawData);
+            base.Shader.Parameters["uTime"]?.SetValue(Main.GlobalTimeWrappedHourly - (ToolConfig.Instance.restartTimeOnLoad ? timeOnStart : 0));
             // vector lists
             // foreach (string key in jsonFile.vectorListParams.Keys)
             // {

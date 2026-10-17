@@ -67,5 +67,10 @@ Configs: {
 			Label: Custom Blending
 			Tooltip: ""
 		}
+
+		restartTimeOnLoad: {
+			Tooltip: ""
+			Label: restart Time On Load
+		}
 	}
 }

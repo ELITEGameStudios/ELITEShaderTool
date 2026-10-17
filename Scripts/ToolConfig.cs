@@ -73,6 +73,10 @@ namespace ELITEShaderTool.Scripts
         [DefaultValue(true)]
         public bool showQuad;
 
+        [BackgroundColor(100, 0, 100, 216)]
+        [DefaultValue(true)]
+        public bool restartTimeOnLoad;
+
 
         public override void OnChanged()
         {
